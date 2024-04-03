@@ -55,18 +55,29 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Function to create text widgets for the predefined matrix rows
-  Widget _buildPredefinedMatrixWidget(vector.Matrix4 matrix) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(4, (i) {
-        vector.Vector4 row = matrix.getRow(i);
-        return Text(
-          '[ ${row.x.toInt()} ${row.y.toInt()} ${row.z.toInt()} ${row.w.toInt()} ]',
-          style: Theme.of(context).textTheme.headlineMedium,
-        );
-      }),
-    );
-  }
+Widget _buildPredefinedMatrixWidget(vector.Matrix4 matrix) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: List.generate(4, (i) {
+      vector.Vector4 row = matrix.getRow(i);
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          for (int j = 0; j < 4; j++)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+              child: Text(
+                row[j].toInt().toString(),
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            ),
+        ],
+      );
+    }),
+  );
+}
+
+
 
   // Function to create the matrix input fields
   Widget _buildMatrixInput(String matrixName) {
@@ -115,7 +126,7 @@ void saveInputMatrices() {
     String key = keys[i];
     var matrixStrings = userMatrices[key]!;
     var matrixNumbers = matrixStrings.map((row) =>
-      row.map((value) => double.tryParse(value) ?? 0.0).toList()  // Ensures 0.0 for empty fields
+      row.map((value) => double.tryParse(value) ?? 0.0).toList()  
     ).toList();
 
     vector.Matrix4 newMatrix = vector.Matrix4(
@@ -131,9 +142,6 @@ void saveInputMatrices() {
   }
 }
 
-// vector.Matrix4 scalarMultiplyMatrix(double scalar, vector.Matrix4 matrix) {
-//   return matrix.scaled(scalar);
-// }
 
 
 // Helper method to perform scalar multiplication
@@ -156,7 +164,7 @@ vector.Matrix4 performOperation(vector.Matrix4 matrix1, vector.Matrix4 matrix2, 
     case '-':
       return matrix1 - matrix2;
     default:
-      return vector.Matrix4.zero(); // Default to zero matrix for unsupported operations
+      return vector.Matrix4.zero(); 
   }
 }
 
@@ -182,7 +190,6 @@ void processComplexExpression(String expression, int resultIndex) {
 
       // Check and process scalar multiplication
       if (part.contains(RegExp(r'[0-9]'))) {
-    // Debug print to see what's extracted
     print("Part: $part");
 
     // Extracting scalar using regex that captures the numeric part
@@ -349,24 +356,23 @@ List<List<double>> convertMatrix4ToList(vector.Matrix4 matrix) {
               child: const Text('Submit Matrices'),
             ),
 
-            // Example for one of the text field/button pairs
+            //Matrix 1
             Padding(
               padding: EdgeInsets.all(20.0),
               child: Row(
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: _controllers[0],  // Using the first controller for the first text field
+                      controller: _controllers[0],  
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: 'Enter an expression:',
+                        hintText: 'Enter an expression (seperate terms with a space) Example: 2A + B - 9C',
                       ),
                     ),
                   ),
                   SizedBox(width: 8.0),
                   ElevatedButton(
                     onPressed: () {
-                      // Use the text from the corresponding text field's controller
                       processComplexExpression(_controllers[0].text, 0);
                     },
                     child: Text('Submit'),
@@ -389,34 +395,36 @@ List<List<double>> convertMatrix4ToList(vector.Matrix4 matrix) {
                 )).toList(),
               ),
             ),
+            //Matrix 2
+            Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controllers[1],  
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter an expression (seperate terms with a space) Example: 2A + B - 9C',
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      processComplexExpression(_controllers[1].text, 1);
+                    },
+                    child: Text('Submit'),
+                  ),
+                ],
+              ),
+            ),
 
-            Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    // Use Expanded to ensure the text field takes up the remaining space
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Enter an expression:',
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8.0), // Add some spacing between the text field and the button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Your button tap logic here
-                    },
-                    child: Text('Submit'),
-                  ),
-                ],
-              ),
-            ),
+            // Assuming this is for displayMatrix2
             Padding(
               padding: EdgeInsets.all(20.0),
               child: Column(
-                children: displayMatrix.map((row) => Row(
+                children: displayMatrix2.map((row) => Row(  
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: row.map((item) => 
                     Padding(
@@ -426,33 +434,36 @@ List<List<double>> convertMatrix4ToList(vector.Matrix4 matrix) {
                 )).toList(),
               ),
             ),
+            //Matrix 3
             Padding(
               padding: EdgeInsets.all(20.0),
               child: Row(
                 children: [
                   Expanded(
-                    // Use Expanded to ensure the text field takes up the remaining space
                     child: TextField(
+                      controller: _controllers[2],  
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: 'Enter an expression:',
+                        hintText: 'Enter an expression (seperate terms with a space) Example: 2A + B - 9C',
                       ),
                     ),
                   ),
-                  SizedBox(width: 8.0), // Add some spacing between the text field and the button
+                  SizedBox(width: 8.0),
                   ElevatedButton(
                     onPressed: () {
-                      // Your button tap logic here
+                      processComplexExpression(_controllers[2].text, 2);
                     },
                     child: Text('Submit'),
                   ),
                 ],
               ),
             ),
+
+            // Assuming this is for displayMatrix3
             Padding(
               padding: EdgeInsets.all(20.0),
               child: Column(
-                children: displayMatrix.map((row) => Row(
+                children: displayMatrix3.map((row) => Row(  
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: row.map((item) => 
                     Padding(
@@ -462,33 +473,36 @@ List<List<double>> convertMatrix4ToList(vector.Matrix4 matrix) {
                 )).toList(),
               ),
             ),
+            //Matrix 4
             Padding(
               padding: EdgeInsets.all(20.0),
               child: Row(
                 children: [
                   Expanded(
-                    // Use Expanded to ensure the text field takes up the remaining space
                     child: TextField(
+                      controller: _controllers[3],  
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: 'Enter an expression:',
+                        hintText: 'Enter an expression (seperate terms with a space) Example: 2A + B - 9C',
                       ),
                     ),
                   ),
-                  SizedBox(width: 8.0), // Add some spacing between the text field and the button
+                  SizedBox(width: 8.0),
                   ElevatedButton(
                     onPressed: () {
-                      // Your button tap logic here
+                      processComplexExpression(_controllers[3].text, 3);
                     },
                     child: Text('Submit'),
                   ),
                 ],
               ),
             ),
+
+            // Assuming this is for displayMatrix4
             Padding(
               padding: EdgeInsets.all(20.0),
               child: Column(
-                children: displayMatrix.map((row) => Row(
+                children: displayMatrix4.map((row) => Row(  
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: row.map((item) => 
                     Padding(
